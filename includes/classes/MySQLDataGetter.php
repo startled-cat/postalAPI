@@ -39,12 +39,12 @@
                 try {
                     $this->connection->close();
                 } catch (Exception $ex) {
-                    //go to void
+                    //go to void //nwm co to here xd
                 }
             }
         }
         
-        private function makeDataSafe($data) {
+        private function makeDataSafe($data) { // może sanitizeData bym nazwał
             $safeData = $this->connection->real_escape_string($data);
             return $safeData;
         }
@@ -65,6 +65,7 @@
             $response = $this->getRawDataByPostalCode($postalCode)->fetch_assoc();
             
             if($response == NULL) {
+                // nie mieszałbym żeczy związanych z db i http, w sensie klasa ogarniająca baze danych nie powinna ogarniać odpowiedzi http
                 $this->errorHandler->throwError(400, 'Could not find any data for code: '.$postalCode);
             }
             

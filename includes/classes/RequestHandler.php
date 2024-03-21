@@ -18,7 +18,7 @@
         ) {
             $this->requestData = $requestData;
             $this->headerData = $headerData;
-            $this->dataHandler = $dataHandler;
+            $this->dataHandler = $dataHandler; // here mam warning: Undefined property '$dataHandler'.intelephense(P1014)
             $this->jsonParser = $parser;
             $this->errorHandler = $errorHandler;
             $this->responder = $responder;
@@ -28,17 +28,18 @@
             return $this->headerData;
         }
         
-        public function checkHeader() {
+        public function checkHeader() { // ja bym to nazwał jakoś "isContentTypeJSON", zwlaszcza ze potem w handleRequest piszesz czemu to wywali blad
             return ($this->getContentType() === 'application/json');
         }
-        
-        private function checkRequest() {
+        // public funkcje bym dał pierwsze, potem te krótsze public (które są wywoływane przez w tych dłuższych), potem private dopiero
+        // zeby tak po kolei sie czytalo a nie trzba bylo skakac
+        private function checkRequest() { // albo wgle zamist check_ to nazwać je validate_ wtedy bardziej wiadaomo co robi
             return ($this->requestData != '');
         }
         
         public function handleRequest() {
             if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-                $this->errorHandler->throwError(400, 'Invalid request type');
+                $this->errorHandler->throwError(400, 'Invalid request type'); // jest od tego kod http 405 method not allowed 
             }
             if ($this->checkHeader() == 0) {
                 $this->errorHandler->throwError(400, 'Invalid request header, please provide Content-Type="application/json"');
@@ -70,7 +71,7 @@
         }
         
         private function getDataByPostalCode($jsonDecoded) {
-            if($jsonDecoded->postal_code == "" || !isset($jsonDecoded->request)) {
+            if($jsonDecoded->postal_code == "" || !isset($jsonDecoded->request)) { // !isset($jsonDecoded->request) to juz sprawdzales wczesniej
                 $this->errorHandler->throwError(400, 'Postal code cannot be empty');
             }
             
