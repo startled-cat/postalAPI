@@ -7,7 +7,7 @@
         public function parse($json) {
             $jsonDecoded = json_decode($json);
             
-            if ($jsonDecoded === null) {
+            if ($jsonDecoded === null) { // w sumie to robi coś ten if wgle? czy nei zwróci tego samego bez tego ifa?
                 return null;
             }
             

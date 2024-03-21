@@ -10,7 +10,7 @@
         public function __construct(DataGetterInterface $dataGetter, EncoderInterface $encoder) {
             $this->dataGetter = $dataGetter;
             $this->encoder = $encoder;
-        }
+        } // code style, brak pustej linii bo bloku kodu
         public function getDataToSendByPostalCode($postalCode) {
             $dataArray = $this->dataGetter->getDataByPostalCode($postalCode);
             
