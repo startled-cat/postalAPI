@@ -10,7 +10,7 @@
         
         public function __construct(
             string $requestData, 
-            array $headerData, 
+            string $headerData, 
             ParserInterface $parser, 
             ErrorHandlerInterface $errorHandler, 
             DataHandlerInterface $dataHandler,
@@ -25,11 +25,7 @@
         }
         
         public function getContentType() {
-            if (!isset($this->headerData['Content-Type'])) {
-                return null;
-            }
-            
-            return $this->headerData['Content-Type'];
+            return $this->headerData;
         }
         
         public function checkHeader() {
@@ -45,16 +41,17 @@
                 $this->errorHandler->throwError(400, 'Invalid request type');
             }
             if ($this->checkHeader() == 0) {
-                $this->errorHandler->throwError(400, 'Invalid request header');
-            }
-            if ($this->checkRequest() == 0) {
-                $this->errorHandler->throwError(400, 'Request body is empty');
+                $this->errorHandler->throwError(400, 'Invalid request header, please provide Content-Type="application/json"');
             }
             
             $this->handleMessageBody();
         }
         
         private function handleMessageBody() {
+            if ($this->checkRequest() == 0) {
+                $this->errorHandler->throwError(400, 'Request body is empty');
+            }
+            
             $jsonDecoded = $this->jsonParser->parse($this->requestData);
             
             if ($jsonDecoded === null) {
@@ -69,6 +66,10 @@
                 $this->errorHandler->throwError(400, 'Request of type '.$jsonDecoded->request.' cannot be handled');
             }
             
+            $this->getDataByPostalCode($jsonDecoded);
+        }
+        
+        private function getDataByPostalCode($jsonDecoded) {
             if($jsonDecoded->postal_code == "" || !isset($jsonDecoded->request)) {
                 $this->errorHandler->throwError(400, 'Postal code cannot be empty');
             }

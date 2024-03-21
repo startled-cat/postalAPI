@@ -16,7 +16,7 @@
     $parser = new JsonParser();
     $encoder = new JsonEncoder();
     $dataHandler = new DataHandler($dataGetter, $encoder);
-    $handler = new RequestHandler(file_get_contents('php://input'), getallheaders(), $parser, $errorHandler, $dataHandler, $responder);
+    $handler = new RequestHandler(file_get_contents('php://input'), $_SERVER["CONTENT_TYPE"], $parser, $errorHandler, $dataHandler, $responder);
     
     $handler->handleRequest();
   
