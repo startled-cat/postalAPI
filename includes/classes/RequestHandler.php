@@ -25,19 +25,15 @@
         }
         
         public function getContentType() {
-            if (isset($this->headerData['Content-Type'])) {
-                return $this->headerData['Content-Type'];
-            } else {
+            if (!isset($this->headerData['Content-Type'])) {
                 return null;
             }
+            
+            return $this->headerData['Content-Type'];
         }
         
         public function checkHeader() {
             return ($this->getContentType() === 'application/json');
-        }
-        
-        public function getRequestData() {
-            return $this->requestData;
         }
         
         private function checkRequest() {
@@ -47,15 +43,12 @@
         public function handleRequest() {
             if ($_SERVER['REQUEST_METHOD'] != 'POST') {
                 $this->errorHandler->throwError(400, 'Invalid request type');
-                return;
             }
             if ($this->checkHeader() == 0) {
                 $this->errorHandler->throwError(400, 'Invalid request header');
-                return;
             }
             if ($this->checkRequest() == 0) {
                 $this->errorHandler->throwError(400, 'Request body is empty');
-                return;
             }
             
             $this->handleMessageBody();
@@ -66,23 +59,21 @@
             
             if ($jsonDecoded === null) {
                 $this->errorHandler->throwError(400, 'Invalid request body');
-                return;
             }
             
-            if (isset($jsonDecoded->request)) {
-                if($jsonDecoded->request === "getDataByPostalCode") {
-                    if($jsonDecoded->postal_code != "" && isset($jsonDecoded->request)) {
-                       $messageToSend = $this->dataHandler->getDataToSendByPostalCode($jsonDecoded->postal_code);
-                       $this->responder->sendResponse(200, $messageToSend);
-                    } else {
-                        $this->errorHandler->throwError(400, 'Postal code cannot be empty');
-                    }
-                } else {
-                    $this->errorHandler->throwError(400, 'Request of type '.$jsonDecoded->request.' cannot be handled');
-                }
-            } else {
+            if (!isset($jsonDecoded->request)) {
                 $this->errorHandler->throwError(400, 'No request given in json');
-                return;
             }
+            
+            if($jsonDecoded->request != "getDataByPostalCode") {
+                $this->errorHandler->throwError(400, 'Request of type '.$jsonDecoded->request.' cannot be handled');
+            }
+            
+            if($jsonDecoded->postal_code == "" || !isset($jsonDecoded->request)) {
+                $this->errorHandler->throwError(400, 'Postal code cannot be empty');
+            }
+            
+            $messageToSend = $this->dataHandler->getDataToSendByPostalCode($jsonDecoded->postal_code);
+            $this->responder->sendResponse(200, $messageToSend);
         }
     }

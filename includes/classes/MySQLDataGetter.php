@@ -30,7 +30,6 @@
                 $this->connection->set_charset('utf8');
             } catch (Exception $ex) {
                 $this->errorHandler->throwError(500, 'Database connection error: '.$ex);
-                exit();
             }
             
         }
@@ -67,7 +66,6 @@
             
             if($response == NULL) {
                 $this->errorHandler->throwError(400, 'Could not find any data for code: '.$postalCode);
-                exit();
             }
             
             return $response;

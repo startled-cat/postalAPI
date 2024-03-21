@@ -15,5 +15,6 @@
         public function throwError($code, $errorMsg) {
             $errorObj = new ErrorJsonMessage($errorMsg);
             $this->responder->sendResponse($code, json_encode($errorObj));
+            exit();
         }
     }
